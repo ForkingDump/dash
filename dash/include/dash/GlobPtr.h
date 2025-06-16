@@ -106,7 +106,7 @@ public:
   /**
    * Constructor for conversion of std::nullptr_t.
    */
-  explicit constexpr GlobPtr(std::nullptr_t) DASH_NOEXCEPT
+  constexpr GlobPtr(std::nullptr_t) DASH_NOEXCEPT
     : m_dart_pointer(DART_GPTR_NULL)
   {
   }
