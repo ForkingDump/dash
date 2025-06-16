@@ -15,7 +15,7 @@ Ad-hoc Fixes
 
 Configure:
 ```bash
-cmake -DCMAKE_C_FLAGS="-Wno-format-security" -DCMAKE_CXX_FLAGS="-Wno-format-security"
+cmake -DCMAKE_C_FLAGS="-Wno-format-security" -DCMAKE_CXX_FLAGS="-Wno-format-security" -DENABLE_THREADSUPPORT=ON -DDASH_EXAMPLES_TASKSUPPORT=ON .
 ```
 
 Summary
