@@ -10,7 +10,7 @@ DASH
 A C++ Template Library for Distributed Data Structures with Support
 for Hierarchical Locality for HPC and Data-Driven Science.
 
-Ad-hoc fixes
+Ad-hoc Fixes
 -------
 
 Configure:
