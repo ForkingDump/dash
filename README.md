@@ -10,6 +10,14 @@ DASH
 A C++ Template Library for Distributed Data Structures with Support
 for Hierarchical Locality for HPC and Data-Driven Science.
 
+Ad-hoc fixes
+-------
+
+Configure:
+```bash
+cmake -DCMAKE_C_FLAGS="-Wno-format-security" -DCMAKE_CXX_FLAGS="-Wno-format-security"
+```
+
 Summary
 -------
 
