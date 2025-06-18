@@ -1,0 +1,6 @@
+/home/huydna/projects/dash/dash/CMakeFiles/edit_cache.dir
+/home/huydna/projects/dash/dash/CMakeFiles/rebuild_cache.dir
+/home/huydna/projects/dash/dash/CMakeFiles/list_install_components.dir
+/home/huydna/projects/dash/dash/CMakeFiles/install.dir
+/home/huydna/projects/dash/dash/CMakeFiles/install/local.dir
+/home/huydna/projects/dash/dash/CMakeFiles/install/strip.dir

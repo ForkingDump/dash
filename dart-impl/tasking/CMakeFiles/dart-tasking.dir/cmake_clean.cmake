@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking.c.o"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_llvm.c.o"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_llvm.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_nanos.c.o"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_nanos.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_pthreads.c.o"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_pthreads.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_pthreads_old.c.o"
+  "CMakeFiles/dart-tasking.dir/src/dart_tasking_pthreads_old.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_affinity.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_affinity.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_ayudame.cc.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_ayudame.cc.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_cancellation.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_cancellation.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_context.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_context.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_copyin.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_copyin.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_datadeps.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_datadeps.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_phase.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_phase.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_remote.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_remote.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_signals.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_signals.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_tasklist.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_tasklist.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_taskqueue.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_taskqueue.c.o.d"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_wait.c.o"
+  "CMakeFiles/dart-tasking.dir/src/internal/dart_tasking_wait.c.o.d"
+  "libdart-tasking.a"
+  "libdart-tasking.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C CXX)
+  include(CMakeFiles/dart-tasking.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+###################################################
+# Compiler wrapper for the DASH C++ PGAS          #
+# framework.                                      #
+# The wrapper is used similar to mpicxx and the   #
+# like to ensure that the correct include         #
+# paths and libraries are passed to the compiler. #
+#                                                 #
+# Options:                                        #
+#   --dash:verbose: print compiler invocation     #
+#   --dash:nocppflags: do not pass DASH-related   #
+#                      pre-processor macros       #
+###################################################
+
+DASH_VERBOSE=false
+CXXFLAGS=""
+CXX="/nix/store/f0m6caffiykyvsjim9376a3hx2yj2ghj-gcc-wrapper-14.2.1.20250322/bin/g++"
+INSTALL_PREFIX="/home/huydna/opt/"
+COMPILE_ONLY=false
+LINK_ONLY=true
+DASH_NOCPPFLAGS=false
+COMPILER_ARGS=""
+
+function INVOKE_COMPILER()
+{
+  if ${DASH_VERBOSE} ; then
+    echo $@
+  fi
+
+  exec $@
+}
+
+function PARSE_CPPFLAGS()
+{
+  for flag in $@ ; do
+    if ! ${DASH_NOCPPFLAGS} && [[ $flag == -DDASH* ]] ; then
+      CXXFLAGS="$CXXFLAGS $flag"
+    fi
+  done
+}
+
+##
+# parse wrapper arguments
+##
+for arg in $@ ; do
+  # check whether to linking is done
+  if [ "$arg" == "-c" ] ; then
+    COMPILE_ONLY=true
+    LINK_ONLY=false
+  fi
+  # check for source files
+  if [[ $arg == *\.cc || $arg == *\.cpp ]] ; then
+    LINK_ONLY=false
+  fi
+  if [ "$arg" == "--dash:verbose" -o "$arg" == "-dash:verbose" ] ; then
+    DASH_VERBOSE=true
+  elif [ "$arg" == "--dash:nocppflags" -o "$arg" == "-dash:nocppflags" ] ; then
+    DASH_NOCPPFLAGS=true
+  else
+    COMPILER_ARGS="$COMPILER_ARGS $arg"
+  fi
+done
+
+##
+# parse CMAKE_CXXFLAGS for macro definitions
+# and set the language version flag
+##
+
+if ! ${LINK_ONLY} ; then
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CXXFLAGS=" -O3 -DNDEBUG  -Ofast -DDASH_RELEASE"
+  # only include flags that are needed
+  PARSE_CPPFLAGS ${CMAKE_CXXFLAGS}
+
+  # add include paths
+  CXXFLAGS="$CXXFLAGS -I${INSTALL_PREFIX}/include"
+  CXXFLAGS="$CXXFLAGS  -I/nix/store/nmr698z386bj0r7k9kkassynn579aply-openmpi-5.0.6-dev/include"
+
+  # add additional compiler flags
+  PARSE_CPPFLAGS  -DDASH -DDASH_ENABLE_DEFAULT_INDEX_TYPE_LONG -DDASH_ENABLE_THREADSUPPORT -DDASH_ENABLE_TEST_LOGGING -DDASH_HAVE_STD_TRIVIALLY_COPYABLE -DDASH_ENV_HOST_SYSTEM_ID='default'  -DDASH_EXAMPLES_TASKSUPPORT -fopenmp -Wno-sign-compare -DDASH_MPI_IMPL_ID='openmpi' -DOMPI_SKIP_MPICXX
+
+  # add C++ standard flag
+  CXXFLAGS="${CXXFLAGS} --std=c++14"
+fi
+
+# assemble LDFLAGS only if linking is done
+
+if ! ${COMPILE_ONLY} ; then
+
+  LDFLAGS=" -L${INSTALL_PREFIX}/lib"
+  DART_IMPL="mpi"
+
+  LDFLAGS="${LDFLAGS} -ldash-${DART_IMPL} -ldart-${DART_IMPL} -ldart-base"
+  LDFLAGS="${LDFLAGS}  -lrt -latomic -lpthread /nix/store/lqibl7p1hy1l6imy2v7zmxsvsy5hlqkg-openmpi-5.0.6/lib/libmpi.so"
+fi
+
+INVOKE_COMPILER $CXX $CXXFLAGS $COMPILER_ARGS $LDFLAGS
