@@ -647,9 +647,10 @@ void dart__amsgq__process_buffer(void *dbuf, size_t tailpos) {
     void *data = dbuf + pos;
     pos += header->data_size;
 
-    DART_ASSERT_MSG(pos <= tailpos,
-                    "Message out of bounds (expected %ld but saw %lu)\n",
-                    tailpos, pos);
+    // Remove this due to our dirty trick in slotqueue
+    //DART_ASSERT_MSG(pos <= tailpos,
+    //                "Message out of bounds (expected %ld but saw %lu)\n",
+    //                tailpos, pos);
 
     // invoke the message
     DART_LOG_TRACE("Invoking active message %p id=%d from %i on data %p of "

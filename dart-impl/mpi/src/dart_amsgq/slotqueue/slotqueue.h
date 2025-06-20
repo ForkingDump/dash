@@ -3,6 +3,7 @@
 
 #include "./comm.h"
 #include "./spsc_queue.h"
+#include <cstdint>
 #include <mpi.h>
 #include <stdbool.h>
 #include <stdint.h>
