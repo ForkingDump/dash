@@ -117,8 +117,8 @@ amsg_sq_process_internal(struct dart_amsgq_impl_data *amsgq,
     if (!slot_queue_dequeue(amsgq->queues[comm_rank], output)) {
       break;
     }
-    // dirty trick
-    dart__amsgq__process_buffer(output, 1);
+    struct dart_amsg_header *header = (struct dart_amsg_header *)(output);
+    dart__amsgq__process_buffer(output, sizeof(struct dart_amsg_header) + header->data_size);
   } while (blocking);
   dart__base__mutex_unlock(&amsgq->processing_mutex);
   return DART_OK;
