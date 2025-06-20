@@ -42,17 +42,20 @@ SlotQueue *slot_queue_init(MPI_Aint capacity_per_node, MPI_Aint dequeuer_rank,
                      queue->info, comm, &queue->min_timestamp_ptr,
                      &queue->min_timestamp_win);
     MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->min_timestamp_win);
+    MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->counter_win);
 
     for (int i = 0; i < queue->size; ++i) {
       queue->min_timestamp_ptr[i] = MAX_TIMESTAMP;
     }
     queue->min_timestamp_buf = malloc(queue->size * sizeof(timestamp_t));
+    *queue->counter_ptr = 0;
   } else {
     MPI_Win_allocate(0, sizeof(MPI_Aint), queue->info, comm,
                      &queue->counter_ptr, &queue->counter_win);
     MPI_Win_allocate(0, sizeof(timestamp_t), queue->info, comm,
                      &queue->min_timestamp_ptr, &queue->min_timestamp_win);
     MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->min_timestamp_win);
+    MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->counter_win);
   }
 
   MPI_Win_flush_all(queue->min_timestamp_win);
@@ -193,7 +196,8 @@ bool slot_queue_enqueue(SlotQueue *queue, const char *data, int data_size) {
     return false;
 
   timestamp_t counter;
-  fetch_and_add_sync_uint64(&counter, 1, 0, queue->dequeuer_rank, queue->counter_win);
+  fetch_and_add_sync_uint64(&counter, 1, 0, queue->dequeuer_rank,
+                            queue->counter_win);
 
   data_t timestamped_data = {};
   memcpy(timestamped_data.data, data, data_size);
