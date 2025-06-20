@@ -129,6 +129,9 @@ dart__amsgq__process_buffer(
  */
 
 dart_ret_t
+dart_amsg_sq_init(dart_amsgq_impl_t *impl)    DART_INTERNAL;
+
+dart_ret_t
 dart_amsg_sopnop_init(dart_amsgq_impl_t *impl)    DART_INTERNAL;
 
 dart_ret_t

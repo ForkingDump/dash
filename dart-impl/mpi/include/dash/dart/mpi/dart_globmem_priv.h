@@ -2,6 +2,7 @@
 #define DART__MPI__DART_GLOBMEM_PRIV_H__
 
 #include <dash/dart/base/macro.h>
+#include <dash/dart/mpi/dart_segment.h>
 #include <mpi.h>
 
 /* Global object for one-sided communication on memory region allocated with 'local allocation'. */
