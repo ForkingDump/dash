@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   for (int i = 0; i < 50; ++i) {
-    char s[512];
+    char s[4];
     sprintf(s, "%d", i);
     if (!slot_queue_enqueue(queue, s, strlen(s))) {
       printf("Enqueue failed!\n");
@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   if (rank == 0) {
     for (int i = 0; i < 50 * size; ++i) {
-      char output[512];
+      char output[4];
       if (slot_queue_dequeue(queue, &output)) {
         printf("dequeue %s\n", output);
       } else {

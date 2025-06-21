@@ -232,7 +232,7 @@ bool slot_queue_dequeue(SlotQueue *queue, void *output) {
     return false;
   }
 
-  memcpy(output, output_data.data, 512);
+  memcpy(output, output_data.data, 4);
 
   if (!slot_queue_refresh_dequeue(queue, rank)) {
     slot_queue_refresh_dequeue(queue, rank);
