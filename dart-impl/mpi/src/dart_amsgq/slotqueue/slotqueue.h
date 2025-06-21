@@ -13,7 +13,7 @@
 typedef uint64_t timestamp_t;
 
 typedef struct {
-  char data[4];
+  char data[512];
   uint64_t timestamp;
 } data_t;
 
