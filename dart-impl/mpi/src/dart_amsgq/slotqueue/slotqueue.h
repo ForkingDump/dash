@@ -3,7 +3,7 @@
 
 #include "./comm.h"
 #include "./spsc_queue.h"
-#include <stdint.h>
+#include "faa.h"
 #include <mpi.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,8 +23,7 @@ typedef struct {
   int self_rank;
   MPI_Aint dequeuer_rank;
 
-  MPI_Win counter_win;
-  MPI_Aint* counter_ptr;
+  FaaCounter *counter;
 
   MPI_Win min_timestamp_win;
   timestamp_t *min_timestamp_ptr;
@@ -35,8 +34,8 @@ typedef struct {
   spsc_queue_t *spsc;
 } SlotQueue;
 
-SlotQueue* slot_queue_init(MPI_Aint capacity_per_node,
-                    MPI_Aint dequeuer_rank, MPI_Comm comm);
+SlotQueue *slot_queue_init(MPI_Aint capacity_per_node, MPI_Aint dequeuer_rank,
+                           MPI_Comm comm);
 
 void slot_queue_destroy(SlotQueue *queue);
 

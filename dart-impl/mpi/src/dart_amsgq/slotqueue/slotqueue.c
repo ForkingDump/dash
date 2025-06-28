@@ -1,6 +1,7 @@
 #include "./slotqueue.h"
 #include "./comm.h"
 #include "./spsc_queue.h"
+#include "faa.h"
 #include <mpi.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -16,12 +17,11 @@ SlotQueue *slot_queue_init(MPI_Aint capacity_per_node, MPI_Aint dequeuer_rank,
   SlotQueue *queue = malloc(sizeof(SlotQueue));
   queue->comm = comm;
   queue->dequeuer_rank = dequeuer_rank;
-  queue->counter_win = MPI_WIN_NULL;
-  queue->counter_ptr = NULL;
   queue->min_timestamp_win = MPI_WIN_NULL;
   queue->min_timestamp_ptr = NULL;
   queue->min_timestamp_buf = NULL;
   queue->info = MPI_INFO_NULL;
+  queue->counter = NULL;
 
   int size;
   MPI_Comm_rank(comm, &queue->self_rank);
@@ -30,32 +30,26 @@ SlotQueue *slot_queue_init(MPI_Aint capacity_per_node, MPI_Aint dequeuer_rank,
 
   queue->spsc = spsc_queue_create(capacity_per_node, dequeuer_rank, comm,
                                   sizeof(data_t), 50);
+  queue->counter = faa_counter_create(dequeuer_rank, comm);
 
   MPI_Info_create(&queue->info);
   MPI_Info_set(queue->info, "same_disp_unit", "true");
   MPI_Info_set(queue->info, "accumulate_ordering", "none");
 
   if (queue->self_rank == queue->dequeuer_rank) {
-    MPI_Win_allocate(sizeof(MPI_Aint), sizeof(MPI_Aint), queue->info, comm,
-                     &queue->counter_ptr, &queue->counter_win);
     MPI_Win_allocate(queue->size * sizeof(timestamp_t), sizeof(timestamp_t),
                      queue->info, comm, &queue->min_timestamp_ptr,
                      &queue->min_timestamp_win);
     MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->min_timestamp_win);
-    MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->counter_win);
 
     for (int i = 0; i < queue->size; ++i) {
       queue->min_timestamp_ptr[i] = MAX_TIMESTAMP;
     }
     queue->min_timestamp_buf = malloc(queue->size * sizeof(timestamp_t));
-    *queue->counter_ptr = 0;
   } else {
-    MPI_Win_allocate(0, sizeof(MPI_Aint), queue->info, comm,
-                     &queue->counter_ptr, &queue->counter_win);
     MPI_Win_allocate(0, sizeof(timestamp_t), queue->info, comm,
                      &queue->min_timestamp_ptr, &queue->min_timestamp_win);
     MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->min_timestamp_win);
-    MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->counter_win);
   }
 
   MPI_Win_flush_all(queue->min_timestamp_win);
@@ -73,9 +67,8 @@ void slot_queue_destroy(SlotQueue *queue) {
     MPI_Win_unlock_all(queue->min_timestamp_win);
     MPI_Win_free(&queue->min_timestamp_win);
   }
-  if (queue->counter_win != MPI_WIN_NULL) {
-    MPI_Win_unlock_all(queue->counter_win);
-    MPI_Win_free(&queue->counter_win);
+  if (queue->counter != NULL) {
+    faa_counter_destroy(queue->counter);
   }
   if (queue->info != MPI_INFO_NULL) {
     MPI_Info_free(&queue->info);
@@ -195,9 +188,7 @@ bool slot_queue_enqueue(SlotQueue *queue, const char *data, int data_size) {
   if (!queue || !data)
     return false;
 
-  timestamp_t counter;
-  fetch_and_add_sync_uint64(&counter, 1, 0, queue->dequeuer_rank,
-                            queue->counter_win);
+  timestamp_t counter = faa_counter_get_and_increment(queue->counter);
 
   data_t timestamped_data = {};
   memcpy(timestamped_data.data, data, data_size);
