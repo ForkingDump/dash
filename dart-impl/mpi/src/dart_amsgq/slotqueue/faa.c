@@ -1,4 +1,3 @@
-#pragma once
 #include "./faa.h"
 #include "./comm.h"
 #include <mpi.h>
