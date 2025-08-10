@@ -42,10 +42,11 @@ SlotQueue *slot_queue_init(MPI_Aint capacity_per_node, MPI_Aint dequeuer_rank,
                      &queue->min_timestamp_win);
     MPI_Win_lock_all(MPI_MODE_NOCHECK, queue->min_timestamp_win);
 
+    queue->min_timestamp_buf = malloc(queue->size * sizeof(timestamp_t));
     for (int i = 0; i < queue->size; ++i) {
       queue->min_timestamp_ptr[i] = MAX_TIMESTAMP;
+      queue->min_timestamp_buf[i] = MAX_TIMESTAMP;
     }
-    queue->min_timestamp_buf = malloc(queue->size * sizeof(timestamp_t));
   } else {
     MPI_Win_allocate(0, sizeof(timestamp_t), queue->info, comm,
                      &queue->min_timestamp_ptr, &queue->min_timestamp_win);
@@ -125,8 +126,10 @@ static MPI_Aint slot_queue_read_minimum_rank(SlotQueue *queue) {
   timestamp_t min_timestamp = MAX_TIMESTAMP;
 
   for (int i = 0; i < queue->size; ++i) {
-    aread_async(&queue->min_timestamp_buf[i], sizeof(timestamp_t), i,
-                queue->self_rank, queue->min_timestamp_win);
+    if (queue->min_timestamp_buf[i] == MAX_TIMESTAMP) {
+      aread_async(&queue->min_timestamp_buf[i], sizeof(timestamp_t), i,
+                  queue->self_rank, queue->min_timestamp_win);
+    }
   }
   flush(queue->self_rank, queue->min_timestamp_win);
 
@@ -142,8 +145,10 @@ static MPI_Aint slot_queue_read_minimum_rank(SlotQueue *queue) {
   }
 
   for (int i = 0; i < rank; ++i) {
-    aread_async(&queue->min_timestamp_buf[i], sizeof(timestamp_t), i,
-                queue->self_rank, queue->min_timestamp_win);
+    if (queue->min_timestamp_buf[i] == MAX_TIMESTAMP) {
+      aread_async(&queue->min_timestamp_buf[i], sizeof(timestamp_t), i,
+                  queue->self_rank, queue->min_timestamp_win);
+    }
   }
   flush(queue->self_rank, queue->min_timestamp_win);
 
@@ -173,6 +178,7 @@ static bool slot_queue_refresh_dequeue(SlotQueue *queue, MPI_Aint rank) {
   } else {
     new_timestamp = front.timestamp;
   }
+  queue->min_timestamp_buf[rank] = new_timestamp;
 
   timestamp_t result;
   compare_and_swap_sync_uint64(&old_timestamp, &new_timestamp, &result, rank,
