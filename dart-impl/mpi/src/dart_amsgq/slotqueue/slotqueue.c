@@ -79,6 +79,7 @@ void slot_queue_destroy(SlotQueue *queue) {
   }
 
   spsc_queue_destroy(queue->spsc);
+  free(queue);
 }
 
 static bool slot_queue_refresh_enqueue(SlotQueue *queue, timestamp_t ts) {
