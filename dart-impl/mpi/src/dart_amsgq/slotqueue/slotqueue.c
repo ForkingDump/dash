@@ -1,7 +1,7 @@
 #include "./slotqueue.h"
-#include "./comm.h"
-#include "./spsc_queue.h"
-#include "faa.h"
+#include "../comm.h"
+#include "../spsc_queue.h"
+#include "../faa.h"
 #include <mpi.h>
 #include <stdbool.h>
 #include <stdint.h>

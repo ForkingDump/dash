@@ -1,9 +1,9 @@
 #ifndef SQ_QUEUE_H
 #define SQ_QUEUE_H
 
-#include "./comm.h"
-#include "./spsc_queue.h"
-#include "faa.h"
+#include "../comm.h"
+#include "../faa.h"
+#include "../spsc_queue.h"
 #include <mpi.h>
 #include <stdbool.h>
 #include <stdint.h>

@@ -92,20 +92,16 @@ enum {
   DART_AMSGQ_SENDRECV,
   DART_AMSGQ_DUALWIN,
   DART_AMSGQ_SQ,
+  DART_AMSGQ_LTQUEUE,
 };
 
 static struct dart_env_str2int env_vals[] = {
-    {"singlewin", DART_AMSGQ_SINGLEWIN},
-    {"sopnop", DART_AMSGQ_SOPNOP},
-    {"sopnop2", DART_AMSGQ_SOPNOP2},
-    {"sopnop3", DART_AMSGQ_SOPNOP3},
-    {"sopnop4", DART_AMSGQ_SOPNOP4},
-    {"sopnop5", DART_AMSGQ_SOPNOP5},
-    {"sopnop6", DART_AMSGQ_SOPNOP6},
-    {"sendrecv", DART_AMSGQ_SENDRECV},
-    {"dualwin", DART_AMSGQ_DUALWIN},
-    {"sq", DART_AMSGQ_SQ},
-    {NULL, 0}};
+    {"singlewin", DART_AMSGQ_SINGLEWIN}, {"sopnop", DART_AMSGQ_SOPNOP},
+    {"sopnop2", DART_AMSGQ_SOPNOP2},     {"sopnop3", DART_AMSGQ_SOPNOP3},
+    {"sopnop4", DART_AMSGQ_SOPNOP4},     {"sopnop5", DART_AMSGQ_SOPNOP5},
+    {"sopnop6", DART_AMSGQ_SOPNOP6},     {"sendrecv", DART_AMSGQ_SENDRECV},
+    {"dualwin", DART_AMSGQ_DUALWIN},     {"sq", DART_AMSGQ_SQ},
+    {"lt", DART_AMSGQ_LTQUEUE},          {NULL, 0}};
 
 #ifdef DART_ENABLE_LOGGING
 static uint32_t msgcnt = 0;
@@ -119,6 +115,10 @@ dart_ret_t dart_amsg_init() {
   int impl = dart__base__env__str2int(DART_AMSGQ_IMPL_ENVSTR, env_vals, -1);
 
   switch (impl) {
+  case DART_AMSGQ_LTQUEUE:
+    res = dart_amsg_ltqueue_init(&amsgq_impl);
+    DART_LOG_TRACE("Using ltqueue active message queue");
+    break;
   case DART_AMSGQ_SQ:
     res = dart_amsg_sq_init(&amsgq_impl);
     DART_LOG_TRACE("Using slotqueue active message queue");

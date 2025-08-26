@@ -97,7 +97,7 @@ void aread_async(void *dst, size_t size, int disp, unsigned int target_rank,
 #endif
 }
 
-void fetch_and_add_sync_int64(int64_t *dst, uint64_t increment, int disp,
+void fetch_and_add_sync_int64(void *dst, uint64_t increment, int disp,
                               unsigned int target_rank, MPI_Win win) {
 #ifdef PROFILE
   CALI_MARK_FUNCTION_BEGIN;
@@ -110,7 +110,7 @@ void fetch_and_add_sync_int64(int64_t *dst, uint64_t increment, int disp,
 #endif
 }
 
-void fetch_and_add_sync_uint64(uint64_t *dst, uint64_t increment, int disp,
+void fetch_and_add_sync_uint64(void *dst, uint64_t increment, int disp,
                                unsigned int target_rank, MPI_Win win) {
 #ifdef PROFILE
   CALI_MARK_FUNCTION_BEGIN;
@@ -123,8 +123,8 @@ void fetch_and_add_sync_uint64(uint64_t *dst, uint64_t increment, int disp,
 #endif
 }
 
-void compare_and_swap_sync_int64(const int64_t *old_val, const int64_t *new_val,
-                                 int64_t *result, int disp,
+void compare_and_swap_sync_int64(const void *old_val, const void *new_val,
+                                 void *result, int disp,
                                  unsigned int target_rank, MPI_Win win) {
 #ifdef PROFILE
   CALI_MARK_FUNCTION_BEGIN;
@@ -137,14 +137,27 @@ void compare_and_swap_sync_int64(const int64_t *old_val, const int64_t *new_val,
 #endif
 }
 
-void compare_and_swap_sync_uint64(const uint64_t *old_val,
-                                  const uint64_t *new_val, uint64_t *result,
-                                  int disp, unsigned int target_rank,
-                                  MPI_Win win) {
+void compare_and_swap_sync_uint64(const void *old_val, const void *new_val,
+                                  void *result, int disp,
+                                  unsigned int target_rank, MPI_Win win) {
 #ifdef PROFILE
   CALI_MARK_FUNCTION_BEGIN;
 #endif
   MPI_Compare_and_swap(new_val, old_val, result, MPI_UINT64_T, target_rank,
+                       disp, win);
+  MPI_Win_flush(target_rank, win);
+#ifdef PROFILE
+  CALI_MARK_FUNCTION_END;
+#endif
+}
+
+void compare_and_swap_sync_uint32(const void *old_val, const void *new_val,
+                                  void *result, int disp,
+                                  unsigned int target_rank, MPI_Win win) {
+#ifdef PROFILE
+  CALI_MARK_FUNCTION_BEGIN;
+#endif
+  MPI_Compare_and_swap(new_val, old_val, result, MPI_UINT32_T, target_rank,
                        disp, win);
   MPI_Win_flush(target_rank, win);
 #ifdef PROFILE
